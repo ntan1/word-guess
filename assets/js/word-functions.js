@@ -19,10 +19,8 @@ function checkLetter(letter, word, guessed) {
                 guessed[i] = letter;
             }
         }
-        return guessed;
-    } else {
-        return guessed;
     }
+    return guessed;
 }
 
 function resetWord(word, guessed) {

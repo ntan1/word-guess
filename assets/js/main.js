@@ -5,10 +5,10 @@
 var remaining = 12;
 var wins = 0;
 
-var words = ["spoon", "fork", "axe"];
+var words = ["axe", "bluetooth"];
 var activeWord = "";
 var guessedLetters = [];
-var wordSoFar = []; // for letters in activeWord
+var wordSoFar = ""; // for letters in activeWord
 
 // get reference to document elements
 var boardWord = document.getElementById("theWord"); 
@@ -29,10 +29,23 @@ boardRemaining.textContent = remaining;
 
 document.onkeyup = function(event) {
     console.log(event.key);
-    remaining--;
-    guessedLetters = checkLetter(event.key, activeWord, guessedLetters);
-    boardRemaining.textContent = remaining;
-    boardWord.textContent = displayBoard(guessedLetters); 
-    boardGuessed.textContent += event.key + " ";
+    console.log(event.keyCode);
+    if(event.keyCode >= 65 && event.keyCode <= 90)  {
+        remaining--;
+        guessedLetters = checkLetter(event.key, activeWord, guessedLetters);
+        wordSoFar = guessedLetters.join('');
+        boardRemaining.textContent = remaining;
+        boardWord.textContent = displayBoard(guessedLetters);
+        boardGuessed.textContent += event.key + " ";
+        boardWins.textContent = wins;
+    }
+    if(wordSoFar.replace(" ", "") === activeWord) {
+        wins++;
+        words = removeWord(activeWord, words);
+        activeWord = selectWord(words);
+        guessedLetters = [];
+        guessedLetters = resetWord(activeWord, guessedLetters);
+        boardWord.textContent = displayBoard(guessedLetters);
+        boardGuessed.textContent = "";
+    }
 }
-
