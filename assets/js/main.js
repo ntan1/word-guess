@@ -5,7 +5,7 @@
 var remaining = 12;
 var wins = 0;
 
-var words = ["axe", "bluetooth"];
+var words = ["zeus", "achilles"];
 var activeWord = "";
 var guessedLetters = [];
 var wordSoFar = ""; // for letters in activeWord
