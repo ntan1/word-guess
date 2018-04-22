@@ -20,17 +20,19 @@ function checkLetter(letter, word, guessed) {
             }
         }
     }
+    console.log(guessed);
     return guessed;
 }
 
 function resetWord(word, guessed) {
+    guessed = [];
     for(var i=0; i<word.length; i++) {
         guessed[i] = "_";
     }
     return guessed;
 }
 
-function displayBoard(guessed) {
+function formatWord(guessed) {
     var wordSoFar = "";
     for(var i=0; i<guessed.length; i++) {
         wordSoFar += guessed[i] + " ";
