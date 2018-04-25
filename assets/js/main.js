@@ -8,6 +8,10 @@ var game = {
     correctltrsArr: [], // letters guessed that are correct
     guessedltrsArr: [], // all guessed letters
     resultText: "",
+    audio: {
+        lightning: new Audio("assets/sounds/lightning2.mp3")
+
+    },
     selectWord() {
         this.activeWord = this.words[Math.floor(Math.random() * this.words.length)];
     },
@@ -24,7 +28,10 @@ var game = {
                     this.correctltrsArr[i] = letter;
                 }
             }
+            this.audio.lightning.play();
+            this.audio.lightning.currentTime = 0;
         }
+        this.resultText = "";
     },
     resetBlank() {
         this.correctltrsArr = [];
@@ -60,6 +67,9 @@ var boardRemaining = document.getElementById("remainingGuesses");
 var boardGuessed = document.getElementById("guessedLetters");
 var wonLost = document.getElementById("won-lost");
 var pressKey = document.getElementById("pressKey");
+var board = document.getElementById("board");
+
+//board.style.height = window.innerHeight + "px";
 
 boardWord.focus();
 

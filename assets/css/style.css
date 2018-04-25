@@ -1,8 +1,31 @@
 body {
     font-family: 'Smythe', cursive;
     font-size: 1.5em;
+    position: relative;
+    background: url("../images/Ancient-Aegina.jpg") no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    color: white;
 }
 
 .space-out {
     letter-spacing: 0.3em;
+    margin-right: -0.3em;
+}
+
+.header {
+    background-color: darkgrey;
+}
+
+#board {
+    background-color: rgba(0, 0, 0, 0.6);
+    padding-top: 20px;
+    padding-bottom: 30px;
+    text-align: center;
+}
+
+.game-board {
+    font-size: 3em;
 }
