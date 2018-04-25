@@ -1,18 +1,57 @@
-// Game Settings
-var remaining = 12;
-var wins = 0;
-var startGame = false;
+var game = {
+    remaining: 12,
+    wins: 0,
+    won: false,
+    startGame: false,
+    words: ["zeus", "achilles", "sisyphus"], // array of words to use
+    activeWord: "", // current selected word from words[]
+    correctltrsArr: [], // letters guessed that are correct
+    guessedltrsArr: [], // all guessed letters
+    resultText: "",
+    selectWord() {
+        this.activeWord = this.words[Math.floor(Math.random() * this.words.length)];
+    },
+    removeWord(word=this.activeWord) {
+        var index = this.words.indexOf(word);
+        if (index > -1) {
+            this.words.splice(index, 1);
+        }
+    },
+    checkLetter(letter) {
+        if (this.activeWord.includes(letter)) {
+            for (var i = 0; i < this.activeWord.length; i++) {
+                if (this.activeWord.charAt(i) === letter) {
+                    this.correctltrsArr[i] = letter;
+                }
+            }
+        }
+    },
+    resetBlank() {
+        this.correctltrsArr = [];
+        this.guessedltrsArr = [];
+        for (var i = 0; i < this.activeWord.length; i++) {
+            this.correctltrsArr[i] = "_";
+        }
+    },
+    getWordSoFar() {
+        return this.correctltrsArr.join("");
+    },
+    getGuessedLtrs() {
+        return this.guessedltrsArr.join("");
+    },
+    checkWin() {
+        var won = false;
+        if (!this.correctltrsArr.includes("_")) {
+            this.wins++;
+            won = true;
+            this.resultText = "You have won! The word was " + this.activeWord;
+        }
+        return won;
+    }
+};
 
 // regex to check key press is a letter
 var re = /[a-z]/;
-
-var words = ["zeus", "achilles", "sisyphus"]; // array of words to use
-var activeWord = ""; // current selected word from words[]
-var correctltrsArr = []; // letters guessed that are correct
-var guessedltrsArr = []; // all guessed letters
-var wordSoFar = ""; // string to show correct letters guessed
-var ltrsGuessedStr = ""; // string to show all guessed letters
-var result = ""; // won/lost/beat game
 
 // get reference to document elements
 var boardWord = document.getElementById("theWord");
@@ -25,77 +64,57 @@ var pressKey = document.getElementById("pressKey");
 boardWord.focus();
 
 // generate first word
-if (words.length > 0) {
-    activeWord = selectWord(words);
-    correctltrsArr = resetWord(activeWord, correctltrsArr); //for guessed letters
-    wordSoFar = correctltrsArr.join('');
-    displayBoard();
+game.selectWord();
+game.resetBlank();
+displayBoard();
+
+// display game board
+function displayBoard() {
+    boardWord.textContent = game.getWordSoFar();
+    boardWins.textContent = game.wins;
+    boardRemaining.textContent = game.remaining;
+    boardGuessed.textContent = game.getGuessedLtrs();
+    wonLost.textContent = game.resultText;
 }
 
 document.onkeyup = function (event) {
-    if (remaining > 0 && startGame) {
+    if (game.remaining > 0 && game.startGame && !game.won) {
         doKeyThings(event.key);
-    } else if (!startGame) {
-        startGame = true;
+    } else if (!game.startGame) {
+        game.startGame = true;
         pressKey.textContent = "";
     }
 }
 
 function doKeyThings(key) {
-    var key = key.toLowerCase();
-    if (re.test(key) && key.length === 1 && startGame) { // check input is valid key
-        if (!guessedltrsArr.includes(key)) { // check if key has been pressed before
-            remaining--;
-            guessedltrsArr.push(key);
-            correctltrsArr = checkLetter(key, activeWord, correctltrsArr);
-            wordSoFar = correctltrsArr.join('');
-            ltrsGuessedStr = guessedltrsArr.join('');
-            displayBoard();
-            if (checkWin()) {
+    key = key.toLowerCase();
+    if (re.test(key) && key.length === 1) { // check input is valid letter
+        if (!game.guessedltrsArr.includes(key)) { // check if key has been pressed before
+            game.remaining--;
+            game.guessedltrsArr.push(key);
+            game.checkLetter(key);
+            if (game.checkWin()) {
                 resetBoard();
-            } else if (remaining === 0) {
-                wordSoFar = activeWord;
-                result = "You have lost! The word was " + activeWord;
+            } else if (game.remaining === 0) {
+                game.resultText = "You have lost! The word was " + game.activeWord;
                 pressKey.textContent = "Refresh the page to try again"
-                displayBoard();
             }
+            displayBoard();
         }
     }
 }
 
-// display game board
-function displayBoard() {
-    boardWord.textContent = wordSoFar;
-    boardWins.textContent = wins;
-    boardRemaining.textContent = remaining;
-    boardGuessed.textContent = ltrsGuessedStr;
-    wonLost.textContent = result;
-}
-
-// check win condition
-function checkWin() {
-    var won = false;
-    if (!correctltrsArr.includes("_")) {
-        wins++;
-        won = true;
-        result = "You have won! The word was " + activeWord;
-    }
-    return won;
-}
-
 // reset board after win
 function resetBoard() {
-    if (words.length > 1) {
-        remaining = 12;
-        guessedltrsArr = [];
-        words = removeWord(activeWord, words);
-        activeWord = selectWord(words);
-        correctltrsArr = resetWord(activeWord, correctltrsArr);
-        wordSoFar = correctltrsArr.join("");
-        ltrsGuessedStr = ""
+    if (game.words.length > 1) { // next word
+        game.remaining = 12;
+        game.removeWord();
+        game.selectWord();
+        game.resetBlank();
         displayBoard();
-    } else {
-        result = "Congratulations! You have solved all the words!"
+    } else { // player has won
+        game.resultText = "Congratulations! You have solved all the words!"
+        game.won = true;
         displayBoard();
     }
 }
