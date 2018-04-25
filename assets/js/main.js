@@ -1,80 +1,101 @@
-// Todo: safe key press checking
-// Todo: round end (win and lose)
-
 // Game Settings
 var remaining = 12;
 var wins = 0;
+var startGame = false;
 
+// regex to check key press is a letter
 var re = /[a-z]/;
 
-var words = ["zeus", "achilles", "sisyphus"];
-var activeWord = "";
-var correctLettersArr = [];
-var guessedLettersArr = [];
-var wordSoFar = ""; // for letters in activeWord
+var words = ["zeus", "achilles", "sisyphus"]; // array of words to use
+var activeWord = ""; // current selected word from words[]
+var correctltrsArr = []; // letters guessed that are correct
+var guessedltrsArr = []; // all guessed letters
+var wordSoFar = ""; // string to show correct letters guessed
+var ltrsGuessedStr = ""; // string to show all guessed letters
+var result = ""; // won/lost/beat game
 
 // get reference to document elements
 var boardWord = document.getElementById("theWord");
 var boardWins = document.getElementById("wins");
 var boardRemaining = document.getElementById("remainingGuesses");
 var boardGuessed = document.getElementById("guessedLetters");
+var wonLost = document.getElementById("won-lost");
+var pressKey = document.getElementById("pressKey");
 
-// test word generation and display
+boardWord.focus();
+
+// generate first word
 if (words.length > 0) {
     activeWord = selectWord(words);
-    correctLettersArr = resetWord(activeWord, correctLettersArr); //for guessed letters
-    console.log(correctLettersArr);
+    correctltrsArr = resetWord(activeWord, correctltrsArr); //for guessed letters
+    wordSoFar = correctltrsArr.join('');
+    displayBoard();
 }
 
-boardWord.textContent = formatWord(correctLettersArr);
-boardWins.textContent = wins;
-boardRemaining.textContent = remaining;
-
 document.onkeyup = function (event) {
-    if (remaining > 0) {
+    if (remaining > 0 && startGame) {
         doKeyThings(event.key);
+    } else if (!startGame) {
+        startGame = true;
+        pressKey.textContent = "";
     }
 }
 
 function doKeyThings(key) {
     var key = key.toLowerCase();
-    if (re.test(key) && key.length === 1) {
-        if (!guessedLettersArr.includes(key)) {
+    if (re.test(key) && key.length === 1 && startGame) { // check input is valid key
+        if (!guessedltrsArr.includes(key)) { // check if key has been pressed before
             remaining--;
-            guessedLettersArr.push(key);
-            correctLettersArr = checkLetter(key, activeWord, correctLettersArr);
+            guessedltrsArr.push(key);
+            correctltrsArr = checkLetter(key, activeWord, correctltrsArr);
+            wordSoFar = correctltrsArr.join('');
+            ltrsGuessedStr = guessedltrsArr.join('');
             displayBoard();
-            if(checkWin()){
+            if (checkWin()) {
                 resetBoard();
+            } else if (remaining === 0) {
+                wordSoFar = activeWord;
+                result = "You have lost! The word was " + activeWord;
+                pressKey.textContent = "Refresh the page to try again"
+                displayBoard();
             }
         }
     }
 }
 
+// display game board
 function displayBoard() {
-    wordSoFar = correctLettersArr.join(' ');
-    lettersGuessedString = guessedLettersArr.join(' ');
-    boardRemaining.textContent = remaining;
     boardWord.textContent = wordSoFar;
-    boardGuessed.textContent = lettersGuessedString;
     boardWins.textContent = wins;
+    boardRemaining.textContent = remaining;
+    boardGuessed.textContent = ltrsGuessedStr;
+    wonLost.textContent = result;
 }
 
+// check win condition
 function checkWin() {
     var won = false;
-    if (!correctLettersArr.includes("_")) {
+    if (!correctltrsArr.includes("_")) {
         wins++;
         won = true;
+        result = "You have won! The word was " + activeWord;
     }
     return won;
 }
 
+// reset board after win
 function resetBoard() {
-    remaining = 12;
-    guessedLettersArr = [];
-    words = removeWord(activeWord, words);
-    activeWord = selectWord(words);
-    correctLettersArr = resetWord(activeWord, correctLettersArr);
-    displayBoard();
-    console.log("it has been reset");
+    if (words.length > 1) {
+        remaining = 12;
+        guessedltrsArr = [];
+        words = removeWord(activeWord, words);
+        activeWord = selectWord(words);
+        correctltrsArr = resetWord(activeWord, correctltrsArr);
+        wordSoFar = correctltrsArr.join("");
+        ltrsGuessedStr = ""
+        displayBoard();
+    } else {
+        result = "Congratulations! You have solved all the words!"
+        displayBoard();
+    }
 }

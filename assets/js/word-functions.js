@@ -12,30 +12,21 @@ function removeWord(word, arr) {
     return arr;
 }
 
-function checkLetter(letter, word, guessed) {
+function checkLetter(letter, word, guessedArr) {
     if(word.includes(letter)) {
         for(var i=0; i<word.length; i++) {
             if(word.charAt(i) === letter) {
-                guessed[i] = letter;
+                guessedArr[i] = letter;
             }
         }
     }
-    console.log(guessed);
-    return guessed;
+    return guessedArr;
 }
 
-function resetWord(word, guessed) {
-    guessed = [];
+function resetWord(word, guessedArr) {
+    guessedArr = [];
     for(var i=0; i<word.length; i++) {
-        guessed[i] = "_";
+        guessedArr[i] = "_";
     }
-    return guessed;
-}
-
-function formatWord(guessed) {
-    var wordSoFar = "";
-    for(var i=0; i<guessed.length; i++) {
-        wordSoFar += guessed[i] + " ";
-    }
-    return wordSoFar;
+    return guessedArr;
 }
