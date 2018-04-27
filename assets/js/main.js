@@ -3,7 +3,7 @@ var game = {
     wins: 0,
     won: false,
     startGame: false,
-    words: ["zeus", "achilles", "sisyphus"], // array of words to use
+    words: ["zeus", "hades", "poseidon", "achilles", "hercules", "perseus", "hermes", "athena", "artemis", "atlas", "medusa"], // array of words to use
     activeWord: "", // current selected word from words[]
     correctltrsArr: [], // letters guessed that are correct
     guessedltrsArr: [], // all guessed letters
